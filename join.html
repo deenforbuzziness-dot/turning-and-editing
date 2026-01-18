@@ -1,0 +1,390 @@
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Join This Weekend | Twende Offline</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      :root {
+        --color-bg: #f8f6f2;
+        --color-text: #1a1a1a;
+        --color-accent: #d97706;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--color-bg);
+        color: var(--color-text);
+      }
+      h1, h2, h3, .font-serif {
+        font-family: 'Fraunces', serif;
+      }
+      .glass {
+        background: rgba(248, 246, 242, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .vibe-card {
+        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .vibe-card.selected {
+        border-color: #d97706;
+        background: white;
+        transform: translateY(-8px);
+        box-shadow: 0 40px 80px -15px rgba(217, 119, 6, 0.12);
+      }
+      .vibe-card.selected .check-icon {
+        opacity: 1;
+        transform: scale(1);
+      }
+      input, select {
+        transition: all 0.3s ease;
+      }
+      input:focus, select:focus {
+        background-color: white !important;
+        box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.1);
+      }
+      .itinerary-step {
+        border-left: 1px solid #e5e7eb;
+        padding-left: 1.5rem;
+        position: relative;
+        padding-bottom: 1.5rem;
+      }
+      .itinerary-step:last-child {
+        padding-bottom: 0;
+      }
+      .itinerary-step::before {
+        content: '';
+        position: absolute;
+        left: -4px;
+        top: 0;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #d97706;
+      }
+    </style>
+  </head>
+  <body class="selection:bg-orange-100 antialiased">
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 px-4 py-4 md:px-6 md:py-6">
+      <div class="max-w-7xl mx-auto flex items-center justify-between glass px-4 py-3 md:px-8 md:py-4 rounded-full border border-stone-200/40 shadow-sm">
+        <a href="index.html" class="flex items-center gap-2 group shrink-0">
+          <i data-lucide="arrow-left" class="w-5 h-5 text-stone-400 group-hover:text-black transition-colors"></i>
+          <span class="text-sm md:text-xl font-semibold tracking-tight">Twende<span class="italic font-serif text-orange-700">Offline</span></span>
+        </a>
+        <div class="text-[11px] uppercase tracking-[0.2em] font-bold text-stone-400 hidden sm:block">Step 1 of 3: Selection</div>
+        <a href="index.html" class="text-[11px] uppercase tracking-wider font-bold hover:text-orange-700 transition-colors">Cancel</a>
+      </div>
+    </nav>
+
+    <main class="pt-32 pb-44 px-6">
+      <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="max-w-3xl mb-16 reveal">
+          <h1 class="text-5xl md:text-7xl font-medium tracking-tighter mb-8 leading-tight">
+            Commit to <span class="italic font-light text-orange-700">presence.</span>
+          </h1>
+          <p class="text-xl text-stone-500 font-light leading-relaxed">
+            Choose the specific itinerary that fits your energy this Saturday. 8 people max per group.
+          </p>
+        </header>
+
+        <!-- Step 1: Vibe Selection -->
+        <div class="grid md:grid-cols-3 gap-8 mb-32">
+          <!-- Vibe 1 -->
+          <div onclick="selectVibe(this, 'Sunrise Summit', '1200')" class="vibe-card group cursor-pointer relative bg-white border border-stone-100 rounded-[2.5rem] overflow-hidden reveal stagger-1">
+            <div class="h-[220px] overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Hike">
+              <div class="absolute bottom-4 left-4 glass px-3 py-1 rounded-full text-xs font-bold text-orange-800">KES 1,200</div>
+            </div>
+            <div class="p-8">
+              <h3 class="text-2xl font-bold mb-6">Sunrise Summit</h3>
+              <div class="space-y-4 mb-8">
+                <div class="itinerary-step">
+                  <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">11:00 AM</p>
+                  <p class="text-sm text-stone-900 font-medium">Meet at North Gate & Phone Pouching</p>
+                </div>
+                <div class="itinerary-step">
+                  <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">11:45 AM</p>
+                  <p class="text-sm text-stone-900 font-medium">Guided Hike to Peak (Medium Pace)</p>
+                </div>
+                <div class="itinerary-step">
+                  <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">1:00 PM</p>
+                  <p class="text-sm text-stone-900 font-medium">Silent Summit Picnic & Fresh Juice</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 text-[11px] font-bold text-stone-400 uppercase">
+                 <i data-lucide="map-pin" class="w-4 h-4"></i> Campus Trails
+              </div>
+            </div>
+            <div class="check-icon absolute top-4 right-4 bg-orange-700 text-white p-2 rounded-full opacity-0 scale-50 transition-all">
+              <i data-lucide="check" class="w-5 h-5"></i>
+            </div>
+          </div>
+
+          <!-- Vibe 2 -->
+          <div onclick="selectVibe(this, 'Barefoot Boardgames', '800')" class="vibe-card group cursor-pointer relative bg-white border border-stone-100 rounded-[2.5rem] overflow-hidden reveal stagger-2">
+            <div class="h-[220px] overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Games">
+              <div class="absolute bottom-4 left-4 glass px-3 py-1 rounded-full text-xs font-bold text-orange-800">KES 800</div>
+            </div>
+            <div class="p-8">
+              <h3 class="text-2xl font-bold mb-6">Barefoot Boardgames</h3>
+              <div class="space-y-4 mb-8">
+                <div class="itinerary-step">
+                  <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">2:00 PM</p>
+                  <p class="text-sm text-stone-900 font-medium">Arrival at Quad & Pouching</p>
+                </div>
+                <div class="itinerary-step">
+                  <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">2:30 PM</p>
+                  <p class="text-sm text-stone-900 font-medium">Tournament Style Catan / Cards</p>
+                </div>
+                <div class="itinerary-step">
+                  <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">4:00 PM</p>
+                  <p class="text-sm text-stone-900 font-medium">Group 'Deep Talk' Q&A session</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 text-[11px] font-bold text-stone-400 uppercase">
+                 <i data-lucide="map-pin" class="w-4 h-4"></i> Main Lawn
+              </div>
+            </div>
+            <div class="check-icon absolute top-4 right-4 bg-orange-700 text-white p-2 rounded-full opacity-0 scale-50 transition-all">
+              <i data-lucide="check" class="w-5 h-5"></i>
+            </div>
+          </div>
+
+          <!-- Vibe 3 -->
+          <div onclick="selectVibe(this, 'Urban Art Walk', '1500')" class="vibe-card group cursor-pointer relative bg-white border border-stone-100 rounded-[2.5rem] overflow-hidden reveal stagger-3">
+            <div class="h-[220px] overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1513364235641-79a59276092b?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Art">
+              <div class="absolute bottom-4 left-4 glass px-3 py-1 rounded-full text-xs font-bold text-orange-800">KES 1,500</div>
+            </div>
+            <div class="p-8">
+              <h3 class="text-2xl font-bold mb-6">Urban Art Walk</h3>
+              <div class="space-y-4 mb-8">
+                <div class="itinerary-step">
+                  <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">11:00 AM</p>
+                  <p class="text-sm text-stone-900 font-medium">Mural Tour & Sketch Stop</p>
+                </div>
+                <div class="itinerary-step">
+                  <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">12:30 PM</p>
+                  <p class="text-sm text-stone-900 font-medium">Local Street Food Tasting</p>
+                </div>
+                <div class="itinerary-step">
+                  <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">1:45 PM</p>
+                  <p class="text-sm text-stone-900 font-medium">Phone Return & Group Photo</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 text-[11px] font-bold text-stone-400 uppercase">
+                 <i data-lucide="map-pin" class="w-4 h-4"></i> Arts District
+              </div>
+            </div>
+            <div class="check-icon absolute top-4 right-4 bg-orange-700 text-white p-2 rounded-full opacity-0 scale-50 transition-all">
+              <i data-lucide="check" class="w-5 h-5"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: User Information -->
+        <section id="details-section" class="max-w-4xl mx-auto bg-white p-12 md:p-16 rounded-[3.5rem] border border-stone-100 shadow-2xl reveal">
+          <div class="text-center mb-12">
+            <span class="text-orange-700 text-[10px] uppercase tracking-[0.3em] font-bold mb-2 block">Step 2: Who's Coming?</span>
+            <h2 class="text-4xl font-medium mb-4">Your Details</h2>
+            <p id="vibe-indicator" class="text-stone-400 font-light italic">Please select a vibe above first</p>
+          </div>
+
+          <form id="signup-form" class="space-y-8">
+            <div class="grid md:grid-cols-2 gap-8">
+              <!-- Name -->
+              <div class="space-y-2">
+                <label class="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 ml-4">Full Name</label>
+                <input type="text" id="user-name" required placeholder="Real names only" class="w-full bg-stone-50 border-none rounded-2xl px-6 py-4 outline-none">
+              </div>
+              <!-- Mobile -->
+              <div class="space-y-2">
+                <label class="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 ml-4">Mobile Number</label>
+                <input type="tel" id="user-phone" required placeholder="07XX XXX XXX" class="w-full bg-stone-50 border-none rounded-2xl px-6 py-4 outline-none">
+              </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+              <!-- University -->
+              <div class="space-y-2">
+                <label class="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 ml-4">University</label>
+                <select id="user-uni" required class="w-full bg-stone-50 border-none rounded-2xl px-6 py-4 outline-none appearance-none cursor-pointer">
+                  <option value="" disabled selected>Select your campus</option>
+                  <option>University of Nairobi</option>
+                  <option>Strathmore University</option>
+                  <option>Kenyatta University</option>
+                  <option>USIU-Africa</option>
+                  <option>Other / Visiting</option>
+                </select>
+              </div>
+              <!-- School -->
+              <div class="space-y-2">
+                <label class="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 ml-4">School / Faculty</label>
+                <input type="text" id="user-school" required placeholder="e.g. School of Arts" class="w-full bg-stone-50 border-none rounded-2xl px-6 py-4 outline-none">
+              </div>
+            </div>
+
+            <!-- Gender Section -->
+            <div class="space-y-4">
+              <label class="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 ml-4">Gender (For group balance)</label>
+              <div class="flex flex-wrap gap-4">
+                <label class="flex-1 min-w-[100px]">
+                  <input type="radio" name="gender" value="female" class="hidden peer" required>
+                  <div class="peer-checked:bg-orange-700 peer-checked:text-white bg-stone-50 text-stone-600 p-4 rounded-xl text-center text-sm font-bold cursor-pointer hover:bg-stone-100 transition-all">Female</div>
+                </label>
+                <label class="flex-1 min-w-[100px]">
+                  <input type="radio" name="gender" value="male" class="hidden peer">
+                  <div class="peer-checked:bg-orange-700 peer-checked:text-white bg-stone-50 text-stone-600 p-4 rounded-xl text-center text-sm font-bold cursor-pointer hover:bg-stone-100 transition-all">Male</div>
+                </label>
+                <label class="flex-1 min-w-[100px]">
+                  <input type="radio" name="gender" value="other" class="hidden peer">
+                  <div class="peer-checked:bg-orange-700 peer-checked:text-white bg-stone-50 text-stone-600 p-4 rounded-xl text-center text-sm font-bold cursor-pointer hover:bg-stone-100 transition-all">Other</div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Year of Study -->
+            <div class="space-y-4">
+              <label class="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 ml-4">Year of Study</label>
+              <div class="flex flex-wrap gap-4">
+                <label class="flex-1 min-w-[80px]">
+                  <input type="radio" name="year" value="1" class="hidden peer" required>
+                  <div class="peer-checked:bg-orange-700 peer-checked:text-white bg-stone-50 text-stone-600 p-4 rounded-xl text-center text-sm font-bold cursor-pointer hover:bg-stone-100 transition-all">Year 1</div>
+                </label>
+                <label class="flex-1 min-w-[80px]">
+                  <input type="radio" name="year" value="2" class="hidden peer">
+                  <div class="peer-checked:bg-orange-700 peer-checked:text-white bg-stone-50 text-stone-600 p-4 rounded-xl text-center text-sm font-bold cursor-pointer hover:bg-stone-100 transition-all">Year 2</div>
+                </label>
+                <label class="flex-1 min-w-[80px]">
+                  <input type="radio" name="year" value="3" class="hidden peer">
+                  <div class="peer-checked:bg-orange-700 peer-checked:text-white bg-stone-50 text-stone-600 p-4 rounded-xl text-center text-sm font-bold cursor-pointer hover:bg-stone-100 transition-all">Year 3</div>
+                </label>
+                <label class="flex-1 min-w-[80px]">
+                  <input type="radio" name="year" value="4" class="hidden peer">
+                  <div class="peer-checked:bg-orange-700 peer-checked:text-white bg-stone-50 text-stone-600 p-4 rounded-xl text-center text-sm font-bold cursor-pointer hover:bg-stone-100 transition-all">Year 4</div>
+                </label>
+                <label class="flex-1 min-w-[80px]">
+                  <input type="radio" name="year" value="Masters" class="hidden peer">
+                  <div class="peer-checked:bg-orange-700 peer-checked:text-white bg-stone-50 text-stone-600 p-4 rounded-xl text-center text-sm font-bold cursor-pointer hover:bg-stone-100 transition-all">Masters+</div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Step 3: Payment Summary -->
+            <div id="payment-summary" class="mt-16 pt-12 border-t border-stone-100 opacity-40 transition-opacity">
+              <div class="bg-orange-50 rounded-3xl p-8 mb-8">
+                 <div class="flex justify-between items-center mb-4">
+                   <p class="text-stone-600 font-medium">Weekend Pass</p>
+                   <p id="summary-vibe" class="text-stone-900 font-bold">Not selected</p>
+                 </div>
+                 <div class="flex justify-between items-center text-xl">
+                   <p class="text-stone-600 font-medium">Total Price</p>
+                   <p id="summary-total" class="text-orange-700 font-black">KES 0</p>
+                 </div>
+              </div>
+              
+              <button type="button" onclick="handleSubmit()" id="submit-btn" disabled class="w-full bg-stone-900 text-white py-6 rounded-2xl text-xl font-bold shadow-2xl hover:bg-orange-700 transition-all active:scale-95 flex items-center justify-center gap-3">
+                <i data-lucide="lock" class="w-5 h-5"></i> Complete Payment & Secure Spot
+              </button>
+              <p class="text-center text-[10px] text-stone-400 mt-6 uppercase tracking-widest font-medium">Securely processed via M-Pesa / Card simulation</p>
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      lucide.createIcons();
+
+      let currentVibe = null;
+      let currentPrice = 0;
+
+      function selectVibe(el, name, price) {
+        // UI Highlight
+        document.querySelectorAll('.vibe-card').forEach(card => card.classList.remove('selected'));
+        el.classList.add('selected');
+        
+        currentVibe = name;
+        currentPrice = price;
+
+        // Update Indicators
+        const vibeText = document.getElementById('vibe-indicator');
+        vibeText.innerHTML = `Vibe: <span class="text-orange-700 font-bold">${name}</span>`;
+        vibeText.classList.remove('text-stone-400');
+        vibeText.classList.add('text-stone-900');
+
+        // Update Summary
+        document.getElementById('summary-vibe').innerText = name;
+        document.getElementById('summary-total').innerText = `KES ${price}`;
+        document.getElementById('payment-summary').classList.remove('opacity-40');
+        document.getElementById('submit-btn').disabled = false;
+
+        // Smooth Scroll to Form
+        document.getElementById('details-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      function handleSubmit() {
+        const name = document.getElementById('user-name').value;
+        const phone = document.getElementById('user-phone').value;
+        const gender = document.querySelector('input[name="gender"]:checked');
+        
+        if (!name || !phone || !gender) {
+          alert('Please fill in your basic details and select your gender.');
+          return;
+        }
+
+        // Simulate success
+        const btn = document.getElementById('submit-btn');
+        btn.innerHTML = `<span class="animate-spin"><i data-lucide="loader-2"></i></span> Processing...`;
+        lucide.createIcons();
+        
+        setTimeout(() => {
+          document.body.innerHTML = `
+            <div class="min-h-screen flex items-center justify-center p-6 text-center">
+              <div class="max-w-md reveal active">
+                <div class="w-20 h-20 bg-green-100 text-green-700 rounded-full flex items-center justify-center mx-auto mb-8">
+                  <i data-lucide="check-circle-2" class="w-10 h-10"></i>
+                </div>
+                <h1 class="text-4xl font-bold mb-4">Spot Secured!</h1>
+                <p class="text-stone-500 mb-8 leading-relaxed">
+                  Welcome to the circle, ${name}. We've sent a confirmation to ${phone}. Check your phone for the meeting point details and host contact.
+                </p>
+                <a href="index.html" class="inline-block bg-stone-900 text-white px-8 py-4 rounded-xl font-bold transition-all hover:bg-orange-700">Back to Home</a>
+              </div>
+            </div>
+          `;
+          lucide.createIcons();
+        }, 1500);
+      }
+
+      // Intersection Observer for animations
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.reveal').forEach(r => observer.observe(r));
+    </script>
+  </body>
+</html>

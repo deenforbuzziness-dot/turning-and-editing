@@ -1,0 +1,738 @@
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Twende Offline | Real Fun. Pure Vibes.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      :root {
+        --color-bg: #f8f6f2;
+        --color-text: #1a1a1a;
+        --color-accent: #d97706;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--color-bg);
+        color: var(--color-text);
+      }
+      h1, h2, h3, .font-serif {
+        font-family: 'Fraunces', serif;
+      }
+      .glass {
+        background: rgba(248, 246, 242, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .stagger-1 { transition-delay: 0.1s; }
+      .stagger-2 { transition-delay: 0.2s; }
+      .stagger-3 { transition-delay: 0.3s; }
+      
+      .vibe-card {
+        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .vibe-card.selected {
+        border-color: #d97706;
+        background: white;
+        transform: translateY(-8px);
+        box-shadow: 0 40px 80px -15px rgba(217, 119, 6, 0.12);
+      }
+      .vibe-card.selected .check-icon {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .itinerary-step {
+        border-left: 1px solid #e5e7eb;
+        padding-left: 1.5rem;
+        position: relative;
+        padding-bottom: 1.5rem;
+      }
+      .itinerary-step:last-child { padding-bottom: 0; }
+      .itinerary-step::before {
+        content: '';
+        position: absolute;
+        left: -4px;
+        top: 0;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #d97706;
+      }
+
+      .highlight-fun::before {
+        content: '';
+        position: absolute;
+        width: 140%; height: 120%;
+        background: #fef08a; opacity: 0.5;
+        border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%) rotate(-5deg);
+        z-index: -1;
+      }
+      .highlight-pure::before {
+        content: '';
+        position: absolute;
+        width: 130%; height: 110%;
+        background: #ffedd5; opacity: 0.6;
+        border-radius: 60% 40% 30% 70% / 50% 30% 70% 50%;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%) rotate(8deg);
+        z-index: -1;
+      }
+
+      [data-view] { display: none; }
+      [data-view].active-view { display: block; }
+
+      .view-transition {
+        animation: fadeIn 0.5s ease-out forwards;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      #mobile-menu {
+        transform: translateY(-100%);
+        transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      #mobile-menu.open {
+        transform: translateY(0);
+      }
+
+      #last-event-prompt {
+        opacity: 0;
+        transform: translateY(100px);
+        transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      #last-event-prompt.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "framer-motion": "https://esm.sh/framer-motion@^12.26.2",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
+  }
+}
+</script>
+</head>
+  <body class="selection:bg-orange-100 antialiased">
+    <!-- Navigation -->
+    <nav id="main-nav" class="fixed top-0 left-0 right-0 z-[60] px-4 py-4 md:px-6 md:py-6">
+      <div class="max-w-7xl mx-auto flex items-center justify-between glass px-4 py-3 md:px-8 md:py-4 rounded-full border border-stone-200/40 shadow-sm relative z-10">
+        <!-- Persistent Logo Area -->
+        <div class="flex items-center gap-3">
+          <button id="nav-back-btn" onclick="navigateTo('home')" class="hidden items-center justify-center p-2 rounded-full hover:bg-stone-100 transition-colors">
+            <i data-lucide="arrow-left" class="w-5 h-5 text-stone-600"></i>
+          </button>
+          <div id="nav-logo-home" class="flex items-center gap-2 group shrink-0 cursor-pointer" onclick="handleLogoClick()">
+            <div class="w-6 h-6 md:w-7 md:h-7 bg-[#1a1a1a] rounded-sm rotate-45 flex items-center justify-center text-white font-bold transition-transform group-hover:rotate-0">
+              <span class="-rotate-45 group-hover:rotate-0 transition-transform text-xs md:text-base">T</span>
+            </div>
+            <span class="text-sm md:text-xl font-semibold tracking-tight">Twende<span class="italic font-serif text-orange-700">Offline</span></span>
+          </div>
+        </div>
+
+        <!-- Links -->
+        <div id="nav-links" class="hidden lg:flex items-center gap-10 text-[13px] uppercase tracking-[0.15em] font-semibold text-stone-500">
+          <a href="#why" class="hover:text-black transition-colors">Our Why</a>
+          <a href="#how" class="hover:text-black transition-colors">Process</a>
+          <a href="#diff" class="hover:text-black transition-colors">The Rules</a>
+        </div>
+
+        <!-- Action Area -->
+        <div class="flex items-center gap-4">
+          <button id="mobile-menu-btn" class="lg:hidden p-2 text-stone-500 hover:text-black transition-colors" onclick="toggleMobileMenu()">
+            <i data-lucide="menu" id="menu-icon" class="w-6 h-6"></i>
+          </button>
+          <button id="nav-cta" onclick="navigateTo('join')" class="bg-[#1a1a1a] text-white px-4 py-2 md:px-6 md:py-2.5 rounded-full text-[10px] md:text-[13px] uppercase tracking-wider font-bold hover:bg-orange-700 transition-all active:scale-95 shadow-lg shadow-black/5 whitespace-nowrap shrink-0">
+            Join This Weekend
+          </button>
+        </div>
+      </div>
+
+      <div id="mobile-menu" class="absolute top-0 left-0 right-0 bg-white shadow-2xl rounded-b-[2rem] pt-32 pb-12 px-8 z-0 lg:hidden">
+        <div class="flex flex-col gap-8 text-center text-lg font-medium text-stone-600">
+          <a href="#why" onclick="toggleMobileMenu()" class="hover:text-orange-700 py-2 border-b border-stone-50">Our Why</a>
+          <a href="#how" onclick="toggleMobileMenu()" class="hover:text-orange-700 py-2 border-b border-stone-50">Process</a>
+          <a href="#diff" onclick="toggleMobileMenu()" class="hover:text-orange-700 py-2 border-b border-stone-50">The Rules</a>
+          <div class="pt-4"><p class="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-300">Campus Experience Project</p></div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- VIEWS CONTAINER -->
+    <div id="views-wrapper">
+      
+      <!-- HOME VIEW -->
+      <section id="home-view" data-view class="active-view view-transition relative">
+        <section class="relative min-h-screen flex items-center pt-24 px-6 overflow-hidden">
+          <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&q=80&w=2000" alt="Students" class="w-full h-full object-cover opacity-60 lg:opacity-85" />
+            <div class="absolute inset-0 bg-gradient-to-r from-[#f8f6f2] via-[#f8f6f2]/85 md:via-[#f8f6f2]/60 to-transparent"></div>
+          </div>
+          <div class="max-w-7xl mx-auto w-full relative z-10">
+            <div class="max-w-3xl reveal active">
+              <div class="inline-block px-4 py-1 rounded-full bg-orange-50 border border-orange-100 text-orange-800 text-[11px] font-bold uppercase tracking-[0.2em] mb-8">Limited to 15 students per group</div>
+              <h1 class="text-6xl md:text-8xl font-medium leading-[1.05] mb-8 tracking-tighter text-stone-900">
+                Real <span class="relative inline-block highlight-fun mx-2">fun</span>. <br />
+                <span class="relative inline-block highlight-pure mr-2">Pure</span> vibes. <br />
+                <span class="italic text-orange-700 font-light underline decoration-stone-200 underline-offset-[12px]">No phones.</span>
+              </h1>
+              <p class="text-xl md:text-2xl text-stone-800 mb-12 max-w-xl leading-relaxed font-light drop-shadow-sm">We curate small, phone-free groups for students who are tired of the scroll and hungry for the soul.</p>
+              <div class="flex flex-col sm:flex-row gap-6">
+                <button onclick="navigateTo('join')" class="bg-orange-700 text-white px-10 py-5 rounded-2xl text-lg font-bold hover:bg-stone-900 hover:-translate-y-1 transition-all shadow-2xl shadow-orange-900/10 text-center">Claim My Spot</button>
+                <a href="#how" class="inline-flex items-center justify-center gap-3 px-8 py-5 text-lg font-semibold hover:gap-5 transition-all text-stone-900">How it works <i data-lucide="arrow-right" class="w-5 h-5"></i></a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Returning User Feedback -->
+        <div id="last-event-prompt" class="fixed bottom-6 right-6 z-[70] w-full max-w-[340px] hidden">
+          <div class="bg-white p-6 rounded-[2rem] border border-stone-200 shadow-2xl relative">
+            <button onclick="dismissFeedback()" class="absolute top-4 right-4 text-stone-300 hover:text-stone-900 transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
+            <span class="text-orange-700 text-[9px] uppercase tracking-[0.3em] font-bold mb-2 block">Returning Member</span>
+            <h3 class="text-xl font-bold mb-2 leading-tight">How was <span id="last-event-name" class="italic text-orange-700">last weekend</span>?</h3>
+            <p class="text-stone-500 text-xs mb-4">Your rating helps us improve future meetups.</p>
+            <div id="feedback-controls">
+              <div class="flex gap-2 mb-4">
+                <button onclick="setHomeRating(1)" class="home-rating-btn w-9 h-9 rounded-lg bg-stone-50 border border-stone-100 flex items-center justify-center text-stone-400 font-bold" data-value="1">1</button>
+                <button onclick="setHomeRating(2)" class="home-rating-btn w-9 h-9 rounded-lg bg-stone-50 border border-stone-100 flex items-center justify-center text-stone-400 font-bold" data-value="2">2</button>
+                <button onclick="setHomeRating(3)" class="home-rating-btn w-9 h-9 rounded-lg bg-stone-50 border border-stone-100 flex items-center justify-center text-stone-400 font-bold" data-value="3">3</button>
+                <button onclick="setHomeRating(4)" class="home-rating-btn w-9 h-9 rounded-lg bg-stone-50 border border-stone-100 flex items-center justify-center text-stone-400 font-bold" data-value="4">4</button>
+                <button onclick="setHomeRating(5)" class="home-rating-btn w-9 h-9 rounded-lg bg-stone-50 border border-stone-100 flex items-center justify-center text-stone-400 font-bold" data-value="5">5</button>
+              </div>
+              <textarea id="home-feedback-text" placeholder="One thing we could do better..." class="w-full bg-stone-50 border border-stone-100 rounded-xl p-3 text-xs outline-none focus:border-orange-500 mb-4 h-16 resize-none transition-all"></textarea>
+              <button onclick="submitHomeFeedback()" class="w-full bg-stone-900 text-white py-3 rounded-xl text-xs font-bold hover:bg-orange-700 transition-all">Submit Feedback</button>
+            </div>
+          </div>
+        </div>
+
+        <section id="why" class="py-32 px-6 border-y border-stone-200/50">
+          <div class="max-w-4xl mx-auto text-center reveal">
+            <span class="text-stone-400 font-semibold uppercase tracking-[0.3em] text-[10px] mb-6 block">The Disconnect</span>
+            <h2 class="text-4xl md:text-6xl font-medium mb-12 leading-tight tracking-tight text-stone-900">We were promised connection, but we got <span class="italic font-light">distraction.</span></h2>
+            <div class="grid md:grid-cols-2 gap-16 text-left">
+              <p class="text-xl text-stone-600 leading-relaxed font-light">You're in a room full of people, but everyone is staring at a 6-inch screen. We're reclaiming the weekend for those who want to look up, breathe, and actually speak.</p>
+              <p class="text-xl text-stone-600 leading-relaxed font-light">Twende Offline isn't just an app—it's an invitation to show up as your real self, without filters, notifications, or "let's take a picture for the story."</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="how" class="py-32 px-6 max-w-7xl mx-auto">
+          <div class="flex flex-col md:flex-row justify-between items-end mb-24 gap-8 reveal">
+            <div class="max-w-xl"><h2 class="text-5xl font-medium tracking-tighter mb-6 text-stone-900">Simplifying the <span class="italic font-light">social.</span></h2><p class="text-lg text-stone-500">We handle the logistics. You handle the presence.</p></div>
+            <div class="text-stone-300 text-8xl font-serif italic hidden md:block">Steps</div>
+          </div>
+          <div class="grid md:grid-cols-3 gap-16">
+            <div class="reveal stagger-1"><span class="text-[80px] font-serif italic text-orange-100 block mb-[-40px] ml-[-10px]">01</span><h3 class="text-2xl font-bold mb-4">Choose a Vibe</h3><p class="text-stone-500">Browse weekly curated meetups—ranging from sunrise hikes to cozy board game dinners.</p></div>
+            <div class="reveal stagger-2"><span class="text-[80px] font-serif italic text-orange-100 block mb-[-40px] ml-[-10px]">02</span><h3 class="text-2xl font-bold mb-4">Unplug Upon Arrival</h3><p class="text-stone-500">Our group host provides a soft pouch for your phone. It stays sealed for the duration.</p></div>
+            <div class="reveal stagger-3"><span class="text-[80px] font-serif italic text-orange-100 block mb-[-40px] ml-[-10px]">03</span><h3 class="text-2xl font-bold mb-4">Real Conversation</h3><p class="text-stone-500">No awkward small talk about followers. Just real humans, real vibes, and new friends.</p></div>
+          </div>
+        </section>
+
+        <section id="diff" class="relative py-44 px-6 bg-stone-900 text-stone-100 overflow-hidden group">
+          <div class="absolute inset-0 z-0 pointer-events-none">
+            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=1200" alt="Group" class="w-full h-full object-cover grayscale opacity-20 group-hover:grayscale-0 group-hover:opacity-40 transition-all duration-[1.5s]" />
+            <div class="absolute inset-0 bg-gradient-to-r from-stone-900 via-stone-900/60 to-transparent"></div>
+          </div>
+          <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-24 items-center relative z-10">
+            <div class="reveal">
+              <h2 class="text-5xl font-medium tracking-tight mb-10 leading-tight">Better for your <br/><span class="text-orange-500 italic font-light">nervous system.</span></h2>
+              <ul class="space-y-12">
+                <li class="flex gap-8 border-b border-stone-800 pb-8"><i data-lucide="shield-check" class="w-8 h-8 text-orange-500 shrink-0"></i><div><h4 class="text-xl font-bold mb-2">Campus Verified</h4><p class="text-stone-400">Exclusive to students. Safety and similarity, guaranteed.</p></div></li>
+                <li class="flex gap-8 border-b border-stone-800 pb-8"><i data-lucide="smartphone-off" class="w-8 h-8 text-orange-500 shrink-0"></i><div><h4 class="text-xl font-bold mb-2">Mandatory Disconnect</h4><p class="text-stone-400">We are phone free. It changes the energy of the room instantly.</p></div></li>
+              </ul>
+            </div>
+            <div class="relative flex justify-center lg:justify-end reveal stagger-2">
+              <div class="p-16 border border-white/10 rounded-full animate-[spin_30s_linear_infinite] backdrop-blur-[2px]">
+                <div class="text-white/40 text-[10px] uppercase tracking-[0.5em] font-bold">Unplug • Connect • Refresh • Unplug</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <footer class="py-20 px-6 border-t border-stone-200/50">
+          <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12 text-stone-400 text-sm">
+            <span>© 2024 Twende Offline. Reclaiming the campus weekend.</span>
+            <div class="flex gap-12 font-bold uppercase tracking-widest text-[11px]">
+              <a href="#" class="hover:text-black">Privacy</a>
+              <a href="#" class="hover:text-black">Guidelines</a>
+              <a href="#" class="hover:text-black">Contact</a>
+            </div>
+          </div>
+        </footer>
+      </section>
+
+      <!-- JOIN VIEW -->
+      <section id="join-view" data-view class="view-transition">
+        <main class="pt-32 pb-44 px-6">
+          <div class="max-w-7xl mx-auto">
+            <header class="max-w-3xl mb-16">
+              <h1 class="text-5xl md:text-7xl font-medium tracking-tighter mb-8 leading-tight">Commit to <span class="italic font-light text-orange-700">presence.</span></h1>
+              <p class="text-xl text-stone-500 font-light">Choose the itinerary that fits your energy this Saturday. 8 people max.</p>
+            </header>
+
+            <div id="vibes-list" class="grid md:grid-cols-3 gap-8 mb-32">
+              <!-- Dynamically populated -->
+            </div>
+
+            <section id="details-section" class="max-w-4xl mx-auto bg-white p-8 md:p-16 rounded-[3.5rem] border border-stone-100 shadow-2xl">
+              <div class="text-center mb-12">
+                <span class="text-orange-700 text-[10px] uppercase tracking-[0.3em] font-bold mb-2 block">Step 2: Details</span>
+                <h2 class="text-4xl font-medium mb-4">Your Information</h2>
+                <p id="vibe-indicator" class="text-stone-400 italic">Please select a vibe above first</p>
+              </div>
+
+              <form id="signup-form" class="space-y-8">
+                <div class="grid md:grid-cols-2 gap-8">
+                  <div class="space-y-2">
+                    <label class="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 ml-4">Full Name</label>
+                    <input type="text" id="user-name" required placeholder="Real names only" class="w-full bg-stone-50 border-none rounded-2xl px-6 py-4 outline-none">
+                  </div>
+                  <div class="space-y-2">
+                    <label class="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 ml-4">Mobile Number</label>
+                    <input type="tel" id="user-phone" required placeholder="07XX XXX XXX" class="w-full bg-stone-50 border-none rounded-2xl px-6 py-4 outline-none">
+                  </div>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                  <div class="space-y-2">
+                    <label class="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 ml-4">University</label>
+                    <select id="user-uni" required class="w-full bg-stone-50 border-none rounded-2xl px-6 py-4 outline-none appearance-none cursor-pointer">
+                      <option value="" disabled selected>Select campus</option>
+                      <option>University of Nairobi</option><option>Strathmore University</option><option>Kenyatta University</option><option>USIU-Africa</option>
+                    </select>
+                  </div>
+                  <div class="space-y-2">
+                    <label class="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 ml-4">School / Faculty</label>
+                    <input type="text" id="user-school" required placeholder="e.g. School of Arts" class="w-full bg-stone-50 border-none rounded-2xl px-6 py-4 outline-none">
+                  </div>
+                </div>
+                
+                <div class="space-y-4">
+                  <label class="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 ml-4">Gender</label>
+                  <div class="flex flex-wrap gap-4">
+                    <label class="flex-1 min-w-[100px]"><input type="radio" name="gender" value="female" class="hidden peer" required><div class="peer-checked:bg-orange-700 peer-checked:text-white bg-stone-50 text-stone-600 p-4 rounded-xl text-center text-sm font-bold cursor-pointer hover:bg-stone-100 transition-all">Female</div></label>
+                    <label class="flex-1 min-w-[100px]"><input type="radio" name="gender" value="male" class="hidden peer"><div class="peer-checked:bg-orange-700 peer-checked:text-white bg-stone-50 text-stone-600 p-4 rounded-xl text-center text-sm font-bold cursor-pointer hover:bg-stone-100 transition-all">Male</div></label>
+                    <label class="flex-1 min-w-[100px]"><input type="radio" name="gender" value="other" class="hidden peer"><div class="peer-checked:bg-orange-700 peer-checked:text-white bg-stone-50 text-stone-600 p-4 rounded-xl text-center text-sm font-bold cursor-pointer hover:bg-stone-100 transition-all">Other</div></label>
+                  </div>
+                </div>
+
+                <div id="payment-summary" class="mt-16 pt-12 border-t opacity-40">
+                  <div class="bg-orange-50 rounded-3xl p-8 mb-8 flex justify-between items-center text-xl font-black text-orange-700">
+                    <span>Total Weekend Pass</span> <span id="summary-total">KES 0</span>
+                  </div>
+                  <button type="button" onclick="handleSubmit()" id="submit-btn" disabled class="w-full bg-stone-900 text-white py-6 rounded-2xl text-xl font-bold shadow-2xl hover:bg-orange-700 transition-all flex items-center justify-center gap-3">
+                    <i data-lucide="lock" class="w-5 h-5"></i> Secure Spot
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        </main>
+      </section>
+
+      <!-- ADMIN DASHBOARD (HIDDEN BY DEFAULT) -->
+      <section id="admin-view" data-view class="view-transition bg-stone-50 min-h-screen">
+        <main class="pt-32 pb-44 px-6 max-w-7xl mx-auto">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-16">
+            <h1 class="text-4xl md:text-6xl font-medium tracking-tighter">Admin <span class="italic font-light text-orange-700">Panel</span></h1>
+            <div class="flex gap-4">
+              <button onclick="switchAdminTab('events')" id="admin-tab-events-btn" class="bg-stone-900 text-white px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider">Events</button>
+              <button onclick="switchAdminTab('participants')" id="admin-tab-parts-btn" class="bg-stone-200 text-stone-600 px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider">Participants</button>
+              <button onclick="navigateTo('home')" class="border border-stone-200 text-stone-500 px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider hover:bg-stone-100">Exit Admin</button>
+            </div>
+          </div>
+
+          <!-- ADMIN: EVENTS CONTENT -->
+          <div id="admin-events-content">
+            <div class="flex justify-between items-center mb-8">
+              <h2 class="text-2xl font-bold">Manage Vibes</h2>
+              <button onclick="openVibeModal()" class="bg-orange-700 text-white px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider">Add Event</button>
+            </div>
+            <div id="admin-events-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <!-- Admin vibes rendered here -->
+            </div>
+          </div>
+
+          <!-- ADMIN: PARTICIPANTS CONTENT -->
+          <div id="admin-participants-content" class="hidden">
+            <div class="bg-white rounded-[2rem] border border-stone-100 overflow-hidden shadow-sm">
+              <table class="w-full text-left">
+                <thead class="bg-stone-50 border-b border-stone-100 text-[10px] font-bold uppercase tracking-widest text-stone-400">
+                  <tr>
+                    <th class="px-8 py-5">Name</th>
+                    <th class="px-8 py-5">Campus</th>
+                    <th class="px-8 py-5">Vibe</th>
+                    <th class="px-8 py-5">WhatsApp</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-participants-list" class="divide-y divide-stone-100 text-sm">
+                  <!-- Participants rendered here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </main>
+      </section>
+    </div>
+
+    <!-- VIBE MANAGEMENT MODAL -->
+    <div id="vibe-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-6">
+      <div class="absolute inset-0 bg-stone-900/40 backdrop-blur-sm" onclick="closeVibeModal()"></div>
+      <div class="relative bg-white w-full max-w-2xl rounded-[3rem] p-8 md:p-12 shadow-2xl overflow-y-auto max-h-[90vh]">
+        <h2 id="vibe-modal-title" class="text-3xl font-medium mb-8">Configure <span class="italic font-light text-orange-700">Vibe</span></h2>
+        <form id="vibe-form" class="space-y-6">
+          <input type="hidden" id="vibe-id">
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-1">
+              <label class="text-[10px] font-bold uppercase text-stone-400">Title</label>
+              <input type="text" id="vibe-title-input" required class="w-full bg-stone-50 p-4 rounded-xl outline-none focus:ring-2 ring-orange-200">
+            </div>
+            <div class="space-y-1">
+              <label class="text-[10px] font-bold uppercase text-stone-400">Price (KES)</label>
+              <input type="number" id="vibe-price-input" required class="w-full bg-stone-50 p-4 rounded-xl outline-none">
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label class="text-[10px] font-bold uppercase text-stone-400">Meetup Location (for WhatsApp)</label>
+            <input type="text" id="vibe-location-input" required class="w-full bg-stone-50 p-4 rounded-xl outline-none" placeholder="e.g. Main Gate, North Campus">
+          </div>
+          <div class="space-y-1">
+            <label class="text-[10px] font-bold uppercase text-stone-400">Image URL</label>
+            <input type="url" id="vibe-image-input" required class="w-full bg-stone-50 p-4 rounded-xl outline-none">
+          </div>
+          <div class="space-y-1">
+            <label class="text-[10px] font-bold uppercase text-stone-400">Itinerary (Time|Activity, one per line)</label>
+            <textarea id="vibe-itinerary-input" rows="4" required class="w-full bg-stone-50 p-4 rounded-xl outline-none font-mono text-sm" placeholder="11:00 AM|Meet & Pouching"></textarea>
+          </div>
+          <div class="flex gap-4 pt-4">
+            <button type="button" onclick="closeVibeModal()" class="flex-1 border py-4 rounded-2xl font-bold uppercase tracking-widest text-[10px]">Cancel</button>
+            <button type="submit" class="flex-1 bg-stone-900 text-white py-4 rounded-2xl font-bold uppercase tracking-widest text-[10px] hover:bg-orange-700">Save Event</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="index.js"></script>
+    <script>
+      // INITIAL DATA & STORAGE
+      const DEFAULT_VIBES = [
+        { id: '1', title: 'Sunrise Summit', price: 1200, location: 'North Gate Trails', image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=800', itinerary: '11:00 AM|Meet & Pouching\n11:45 AM|Guided Hike' },
+        { id: '2', title: 'Barefoot Boardgames', price: 800, location: 'Central Quad Fountain', image: 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&q=80&w=800', itinerary: '2:00 PM|Arrival & Pouching\n2:30 PM|Tournament Style' },
+        { id: '3', title: 'Urban Art Walk', price: 1500, location: 'Creative Arts Hub', image: 'https://images.unsplash.com/photo-1513364235641-79a59276092b?auto=format&fit=crop&q=80&w=800', itinerary: '11:00 AM|Mural Tour\n12:30 PM|Street Food' }
+      ];
+
+      function getVibes() {
+        const stored = localStorage.getItem('tw_vibes');
+        return stored ? JSON.parse(stored) : DEFAULT_VIBES;
+      }
+
+      function saveVibes(vibes) {
+        localStorage.setItem('tw_vibes', JSON.stringify(vibes));
+        renderUserVibes();
+        renderAdminVibes();
+      }
+
+      function getParticipants() {
+        const stored = localStorage.getItem('tw_participants');
+        return stored ? JSON.parse(stored) : [];
+      }
+
+      function addParticipant(p) {
+        const list = getParticipants();
+        list.push(p);
+        localStorage.setItem('tw_participants', JSON.stringify(list));
+      }
+
+      // NAVIGATION LOGIC
+      function navigateTo(view) {
+        const views = document.querySelectorAll('[data-view]');
+        views.forEach(v => v.classList.remove('active-view'));
+        
+        const targetView = document.getElementById(view + '-view');
+        if (targetView) targetView.classList.add('active-view');
+
+        const mainNav = document.getElementById('main-nav');
+        const navLinks = document.getElementById('nav-links');
+        const navCta = document.getElementById('nav-cta');
+        const backBtn = document.getElementById('nav-back-btn');
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+
+        // Reset nav bar appearance
+        mainNav.style.transform = 'translateY(0)';
+        mainNav.classList.remove('hidden');
+
+        if (view === 'admin') {
+          mainNav.classList.add('hidden');
+          renderAdminVibes();
+          renderAdminParticipants();
+        } else if (view === 'join') {
+          navLinks.classList.add('hidden');
+          navCta.classList.add('hidden');
+          backBtn.classList.remove('hidden');
+          backBtn.classList.add('flex');
+          mobileBtn.classList.add('hidden');
+          renderUserVibes();
+        } else {
+          navLinks.classList.remove('hidden');
+          navCta.classList.remove('hidden');
+          backBtn.classList.add('hidden');
+          mobileBtn.classList.remove('hidden');
+          checkReturningUserFeedback();
+        }
+        window.scrollTo(0, 0);
+        lucide.createIcons();
+      }
+
+      function toggleMobileMenu() {
+        const menu = document.getElementById('mobile-menu');
+        const icon = document.getElementById('menu-icon');
+        menu.classList.toggle('open');
+        icon.setAttribute('data-lucide', menu.classList.contains('open') ? 'x' : 'menu');
+        lucide.createIcons();
+      }
+
+      // ADMIN ACCESS
+      let logoClickCount = 0;
+      function handleLogoClick() {
+        logoClickCount++;
+        if (logoClickCount === 3) {
+          logoClickCount = 0;
+          tryAdminAccess();
+        }
+        setTimeout(() => logoClickCount = 0, 1000);
+      }
+
+      window.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'a') {
+          tryAdminAccess();
+        }
+      });
+
+      function tryAdminAccess() {
+        const pin = prompt("Enter Admin Password:");
+        if (pin === "admin123") {
+          navigateTo('admin');
+        }
+      }
+
+      // USER FLOW
+      let currentSelectedVibe = null;
+      function renderUserVibes() {
+        const container = document.getElementById('vibes-list');
+        const vibes = getVibes();
+        container.innerHTML = vibes.map(v => `
+          <div onclick="selectVibe(this, '${v.id}')" class="vibe-card group cursor-pointer relative bg-white border border-stone-100 rounded-[2.5rem] overflow-hidden">
+            <div class="h-[200px] overflow-hidden"><img src="${v.image}" class="w-full h-full object-cover"></div>
+            <div class="p-8">
+              <h3 class="text-2xl font-bold mb-4">${v.title}</h3>
+              <p class="text-xs font-bold text-orange-700 uppercase mb-4">KES ${v.price} • ${v.location}</p>
+              <div class="space-y-4">
+                ${v.itinerary.split('\n').map(step => {
+                  const [time, desc] = step.split('|');
+                  return `<div class="itinerary-step"><p class="text-[10px] font-bold text-stone-400 uppercase">${time || '??'}</p><p class="text-sm text-stone-900">${desc || ''}</p></div>`;
+                }).join('')}
+              </div>
+            </div>
+            <div class="check-icon absolute top-4 right-4 bg-orange-700 text-white p-2 rounded-full opacity-0 scale-50 transition-all"><i data-lucide="check" class="w-5 h-5"></i></div>
+          </div>
+        `).join('');
+        lucide.createIcons();
+      }
+
+      function selectVibe(el, id) {
+        document.querySelectorAll('.vibe-card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        currentSelectedVibe = getVibes().find(v => v.id === id);
+        document.getElementById('vibe-indicator').innerHTML = `Selected: <span class="text-orange-700 font-bold">${currentSelectedVibe.title}</span>`;
+        document.getElementById('summary-total').innerText = `KES ${currentSelectedVibe.price}`;
+        document.getElementById('payment-summary').classList.remove('opacity-40');
+        document.getElementById('submit-btn').disabled = false;
+        document.getElementById('details-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      function handleSubmit() {
+        const name = document.getElementById('user-name').value;
+        const phone = document.getElementById('user-phone').value;
+        const uni = document.getElementById('user-uni').value;
+        if (!name || !phone || !currentSelectedVibe) return alert('Please fill all details.');
+
+        const btn = document.getElementById('submit-btn');
+        btn.innerHTML = `<span class="animate-spin mr-2">◌</span> Securing spot...`;
+        
+        addParticipant({ name, phone, uni, vibe: currentSelectedVibe.title });
+        localStorage.setItem('twende_last_event', currentSelectedVibe.title);
+
+        // WhatsApp trigger
+        const msg = encodeURIComponent(`Hi ${name}! Twende Offline here. We've received your signup for ${currentSelectedVibe.title}! 
+Meetup Point: ${currentSelectedVibe.location}. 
+Can't wait to see you offline! ✨`);
+        const waLink = `https://wa.me/${phone}?text=${msg}`;
+
+        setTimeout(() => {
+          document.getElementById('join-view').innerHTML = `
+            <div class="min-h-screen flex items-center justify-center p-6 text-center">
+              <div class="max-w-md reveal active">
+                <div class="w-24 h-24 bg-green-100 text-green-700 rounded-full flex items-center justify-center mx-auto mb-10"><i data-lucide="check-circle-2" class="w-12 h-12"></i></div>
+                <h1 class="text-5xl font-bold mb-6">Spot Secured!</h1>
+                <p class="text-xl text-stone-500 mb-10">Details sent to WhatsApp. See you at the ${currentSelectedVibe.location}!</p>
+                <button onclick="window.location.reload()" class="bg-stone-900 text-white px-10 py-5 rounded-2xl text-lg font-bold">Back to Home</button>
+              </div>
+            </div>
+          `;
+          lucide.createIcons();
+          window.open(waLink, '_blank');
+        }, 1500);
+      }
+
+      // ADMIN CRUD
+      function renderAdminVibes() {
+        const container = document.getElementById('admin-events-grid');
+        const vibes = getVibes();
+        container.innerHTML = vibes.map(v => `
+          <div class="bg-white p-6 rounded-[2rem] border border-stone-100 shadow-sm group">
+            <h3 class="font-bold text-lg mb-1">${v.title}</h3>
+            <p class="text-xs text-orange-700 font-bold mb-4">KES ${v.price} • ${v.location}</p>
+            <div class="flex gap-4">
+              <button onclick="editVibe('${v.id}')" class="text-[10px] font-bold uppercase text-stone-400 hover:text-black transition-colors">Edit</button>
+              <button onclick="deleteVibe('${v.id}')" class="text-[10px] font-bold uppercase text-red-400 hover:text-red-700 transition-colors">Delete</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function renderAdminParticipants() {
+        const container = document.getElementById('admin-participants-list');
+        const parts = getParticipants();
+        container.innerHTML = parts.length ? parts.map(p => `
+          <tr class="hover:bg-stone-50 transition-colors">
+            <td class="px-8 py-5 font-bold">${p.name}</td>
+            <td class="px-8 py-5 text-stone-500">${p.uni}</td>
+            <td class="px-8 py-5 text-orange-700 font-medium">${p.vibe}</td>
+            <td class="px-8 py-5"><a href="https://wa.me/${p.phone}" target="_blank" class="flex items-center gap-2 text-stone-400 hover:text-green-600 transition-colors"><i data-lucide="message-circle" class="w-4 h-4"></i> ${p.phone}</a></td>
+          </tr>
+        `).join('') : '<tr><td colspan="4" class="px-8 py-12 text-center text-stone-300 italic">No one has joined yet.</td></tr>';
+        lucide.createIcons();
+      }
+
+      function switchAdminTab(tab) {
+        document.getElementById('admin-events-content').classList.toggle('hidden', tab !== 'events');
+        document.getElementById('admin-participants-content').classList.toggle('hidden', tab !== 'participants');
+        
+        const eventsBtn = document.getElementById('admin-tab-events-btn');
+        const partsBtn = document.getElementById('admin-tab-parts-btn');
+        
+        if (tab === 'events') {
+          eventsBtn.className = "bg-stone-900 text-white px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider";
+          partsBtn.className = "bg-stone-200 text-stone-600 px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider";
+        } else {
+          partsBtn.className = "bg-stone-900 text-white px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider";
+          eventsBtn.className = "bg-stone-200 text-stone-600 px-6 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-wider";
+        }
+      }
+
+      function openVibeModal(id = null) {
+        const modal = document.getElementById('vibe-modal');
+        const form = document.getElementById('vibe-form');
+        form.reset();
+        document.getElementById('vibe-id').value = '';
+
+        if (id) {
+          const v = getVibes().find(item => item.id === id);
+          document.getElementById('vibe-id').value = v.id;
+          document.getElementById('vibe-title-input').value = v.title;
+          document.getElementById('vibe-price-input').value = v.price;
+          document.getElementById('vibe-location-input').value = v.location;
+          document.getElementById('vibe-image-input').value = v.image;
+          document.getElementById('vibe-itinerary-input').value = v.itinerary;
+        }
+        modal.classList.remove('hidden');
+      }
+
+      function closeVibeModal() {
+        document.getElementById('vibe-modal').classList.add('hidden');
+      }
+
+      document.getElementById('vibe-form').onsubmit = (e) => {
+        e.preventDefault();
+        const id = document.getElementById('vibe-id').value;
+        const vibes = getVibes();
+        const data = {
+          id: id || Date.now().toString(),
+          title: document.getElementById('vibe-title-input').value,
+          price: document.getElementById('vibe-price-input').value,
+          location: document.getElementById('vibe-location-input').value,
+          image: document.getElementById('vibe-image-input').value,
+          itinerary: document.getElementById('vibe-itinerary-input').value
+        };
+
+        if (id) {
+          const idx = vibes.findIndex(v => v.id === id);
+          vibes[idx] = data;
+        } else {
+          vibes.push(data);
+        }
+        saveVibes(vibes);
+        closeVibeModal();
+      };
+
+      function editVibe(id) { openVibeModal(id); }
+      function deleteVibe(id) { if(confirm('Delete event?')) saveVibes(getVibes().filter(v => v.id !== id)); }
+
+      // HELPERS
+      function checkReturningUserFeedback() {
+        const last = localStorage.getItem('twende_last_event');
+        if (last && !localStorage.getItem('twende_event_rated')) {
+          const p = document.getElementById('last-event-prompt');
+          document.getElementById('last-event-name').innerText = last;
+          p.classList.remove('hidden');
+          setTimeout(() => p.classList.add('visible'), 500);
+        }
+      }
+
+      function setHomeRating(v) {
+        document.querySelectorAll('.home-rating-btn').forEach(b => {
+          b.classList.toggle('bg-orange-50', b.dataset.value <= v);
+          b.classList.toggle('text-orange-700', b.dataset.value <= v);
+        });
+      }
+
+      function submitHomeFeedback() {
+        localStorage.setItem('twende_event_rated', 'true');
+        document.getElementById('feedback-controls').innerHTML = `<p class="py-4 text-center font-bold text-sm">Vibe check complete! ❤️</p>`;
+        setTimeout(() => document.getElementById('last-event-prompt').classList.remove('visible'), 2000);
+      }
+
+      function dismissFeedback() {
+        document.getElementById('last-event-prompt').classList.remove('visible');
+      }
+
+      window.onload = () => {
+        checkReturningUserFeedback();
+        lucide.createIcons();
+      };
+    </script>
+  </body>
+</html>
